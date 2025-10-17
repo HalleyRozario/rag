@@ -11,7 +11,10 @@ router.get('/', async function(req, res, next) {
   const db = connection.db('rag_docs'); // Database name
   console.log("DB Connection Success");
   const collection = db.collection('docs'); // Collection name which is similar to table in SQL
-  await collection.insertOne({key: "Third"});
+  const now = new Date().toISOString();
+  await collection.insertOne({
+    key: now
+  });
   console.log("Document Inserted");
   await connection.close();
   res.json({title: 'DB Connection Success' });
@@ -22,4 +25,16 @@ router.get('/', async function(req, res, next) {
   //res.json({title: 'HRs Express Project (FLOW - from npm start -> goes to bin/www checks for port and starts server -> goes to app.js which uses routes/index.js)'});
 });
 
+// GET for Embeddings
+router.get('/embeddings', async function(req, res, next) {
+  try {
+    const { createEmbeddings } = require('./embeddings');
+    const sampleText = "Hello World";
+    const embeddings = await createEmbeddings(sampleText);
+    res.json({ embeddings });
+  } catch (error) {
+    console.error("Error generating embeddings", error);
+    res.status(500).json({ error: "Failed to generate embeddings" });
+  }
+});
 module.exports = router;
