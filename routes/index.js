@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const mongodb = require('mongodb');
 const { createEmbeddings } = require('./embeddings');
+const { OpenAI } = require("openai");
 
 var PDFParse = require('pdf2json');
 const parser = new PDFParse(this, 1);
@@ -190,9 +191,9 @@ router.post('/conversation', async function (req, res, next) {
     // Check if the message already exists for this session and has an embedding
     let messageEmbedding;
     let existingMessage = await conversationCollection.findOne({ sessionId: sessionId, message: message });
-    if (existingMessage && existingMessage.embedding) {
+    if (existingMessage && existingMessage.embeddings) {
       // Use existing embedding
-      messageEmbedding = existingMessage.embedding;
+      messageEmbedding = existingMessage.embeddings;
       console.log('Reusing existing embedding for message');
     } else {
       // Create embedding and store it
@@ -230,13 +231,28 @@ router.post('/conversation', async function (req, res, next) {
       }
     ]).toArray();
     let finalResult = [];
-    for await (let doc of relevantDocs){
+    for await (let doc of relevantDocs) {
       finalResult.push(doc.text);
     }
     console.log("Relevant Docs Retrieved:", relevantDocs.length);
     await connection.close();
 
-    return res.json(finalResult);
+    const ai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+    const chat = await ai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are a helpful assistant who can answer from given context" },
+        {
+          role: "user",
+          content: `${finalResult.join('\n')}
+\nFrom the above context, answer the following question: ${message}`
+        }
+      ]
+    });
+    return res.json(chat.choices[0].message);
+    //return res.json(finalResult);
   } catch (error) {
     console.error("Error processing conversation", error);
     return res.status(500).json({ message: "Failed to process conversation" });
