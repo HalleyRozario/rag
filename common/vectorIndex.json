@@ -1,0 +1,13 @@
+{
+    "mappings": {
+        "fields": {
+            "embeddings": [
+                {
+                    "dimensions": 1536,
+                    "similarity": "euclidean",
+                    "type": "knnVector"
+                }
+            ]
+        }
+    }
+}

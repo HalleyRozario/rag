@@ -1,0 +1,39 @@
+# Extension Fields
+## Equipment Types Level 0
+A - Electricals
+B - Electronics
+C - Furniture
+---
+## Equipment Types Level 1
+A1 - IronBox
+A2 - Geyser
+B1 - Mobile
+B2 - Television
+C1 - Sofa
+C2 - Dining Table
+---
+
+# Code List Restriction
+Admin Data:
+  createdOn: 2025-10-20T03:58:05.843Z
+  updatedOn: 2025-10-20T03:58:05.843Z
+  createdByUserName: Halley Rozario
+  updatedByUserName: Halley Rozario
+---
+Name: HRsCLR
+---
+Description: HRsCLR (DO NOT DELETE)
+---
+Service Full Name: sap.crm.service.opportunityService
+---
+Controlling Attribute: extensions.HRsEquipmentType
+---
+Code To Restrict: extensions.HRsEquipment_Level1
+---
+## Restrictions
+Controlling: A | Restricted: B1, B2, C1, C2
+---
+Controlling: B | Restricted: A1, A2, C1, C2
+---
+Controlling: C | Restricted: A1, A2, B1, B2
+---
