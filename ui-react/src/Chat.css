@@ -1,0 +1,7 @@
+.chat-container { max-width: 600px; margin: 40px auto; border: 1px solid #ccc; border-radius: 8px; padding: 16px; background: #fafafa; }
+.user { text-align: right; color: #1976d2; margin: 8px 0; }
+.assistant { text-align: left; color: #388e3c; margin: 8px 0; }
+.chat-form { display: flex; gap: 8px; margin-top: 16px; }
+input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+button { padding: 8px 16px; border-radius: 4px; border: none; background: #1976d2; color: #fff; cursor: pointer; }
+button:hover { background: #1565c0; }
