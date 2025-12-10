@@ -23,9 +23,17 @@ router.get('/', async function (req, res, next) {
   let dbStatus = 'unknown';
   try {
     const { connection, collection } = await getMongoCollection();
-    await (collection as any).stats();
-    dbStatus = 'connected';
-    await connection.close();
+    try {
+      if (typeof (collection as any).stats === 'function') {
+        await (collection as any).stats();
+      } else {
+        const db = connection.db('rag_docs');
+        await db.command({ collStats: collection.collectionName || 'docs' });
+      }
+      dbStatus = 'connected';
+    } finally {
+      await connection.close();
+    }
   } catch (e) {
     dbStatus = 'error';
   }
@@ -46,6 +54,26 @@ router.post('/process-content', (req, res, next) => processContentHandler(req, r
 
 // Conversation
 router.post('/conversation', (req, res, next) => conversationHandler(req, res, getMongoCollection));
+
+// DB test endpoint
+router.get('/db-test', async (req, res) => {
+  try {
+    const { connection, collection } = await getMongoCollection();
+    try {
+      if (typeof (collection as any).stats === 'function') {
+        await (collection as any).stats();
+      } else {
+        const db = connection.db('rag_docs');
+        await db.command({ collStats: collection.collectionName || 'docs' });
+      }
+      res.json({ ok: true, message: 'MongoDB reachable', collection: collection.collectionName });
+    } finally {
+      await connection.close();
+    }
+  } catch (err: any) {
+    res.status(500).json({ ok: false, message: 'MongoDB connection failed', error: String(err.message || err) });
+  }
+});
 
 // Where-Used lookup
 router.use('/where-used', whereUsedRouter);

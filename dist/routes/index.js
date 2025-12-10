@@ -25,9 +25,19 @@ router.get('/', async function (req, res, next) {
     let dbStatus = 'unknown';
     try {
         const { connection, collection } = await (0, dbUtil_1.getMongoCollection)();
-        await collection.stats();
-        dbStatus = 'connected';
-        await connection.close();
+        try {
+            if (typeof collection.stats === 'function') {
+                await collection.stats();
+            }
+            else {
+                const db = connection.db('rag_docs');
+                await db.command({ collStats: collection.collectionName || 'docs' });
+            }
+            dbStatus = 'connected';
+        }
+        finally {
+            await connection.close();
+        }
     }
     catch (e) {
         dbStatus = 'error';
@@ -47,6 +57,28 @@ router.get('/embeddings', embeddingsHandler_1.getEmbeddingsHandler);
 router.post('/process-content', (req, res, next) => (0, processContentHandler_1.processContentHandler)(req, res, dbUtil_1.getMongoCollection));
 // Conversation
 router.post('/conversation', (req, res, next) => (0, conversationHandler_1.conversationHandler)(req, res, dbUtil_1.getMongoCollection));
+// DB test endpoint
+router.get('/db-test', async (req, res) => {
+    try {
+        const { connection, collection } = await (0, dbUtil_1.getMongoCollection)();
+        try {
+            if (typeof collection.stats === 'function') {
+                await collection.stats();
+            }
+            else {
+                const db = connection.db('rag_docs');
+                await db.command({ collStats: collection.collectionName || 'docs' });
+            }
+            res.json({ ok: true, message: 'MongoDB reachable', collection: collection.collectionName });
+        }
+        finally {
+            await connection.close();
+        }
+    }
+    catch (err) {
+        res.status(500).json({ ok: false, message: 'MongoDB connection failed', error: String(err.message || err) });
+    }
+});
 // Where-Used lookup
 router.use('/where-used', whereUsed_1.default);
 exports.default = router;
