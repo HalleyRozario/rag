@@ -1,1 +1,24 @@
-<app-chat></app-chat>
+<div class="landing">
+	<h1>Welcome to the RAG Angular UI</h1>
+	<p>This is the Angular frontend for the RAG project.</p>
+
+	<nav class="landing-nav">
+		<a href="#" [class.active]="!showApp" (click)="showApp = false; $event.preventDefault()">Status &amp; ReadMe Doc</a>
+		<a href="#" [class.active]="showApp" (click)="showApp = true; $event.preventDefault()">Enter the Application</a>
+	</nav>
+
+	<div *ngIf="!showApp">
+		<app-status></app-status>
+	</div>
+
+	<div *ngIf="showApp">
+		<app-document-tabs>
+			<div chat>
+				<app-chat></app-chat>
+			</div>
+			<div wizard>
+				<!-- Document Processing Wizard UI will go here -->
+			</div>
+		</app-document-tabs>
+	</div>
+</div>

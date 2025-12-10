@@ -1,0 +1,17 @@
+/* Add basic styles for navigation */
+.landing-nav {
+	margin-bottom: 1em;
+}
+.landing-nav a {
+	margin-right: 1em;
+	text-decoration: none;
+	color: #007bff;
+	font-weight: bold;
+	padding: 0.25em 0.75em;
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+.landing-nav a.active, .landing-nav a:hover {
+	background: #e6f0ff;
+	color: #0056b3;
+}

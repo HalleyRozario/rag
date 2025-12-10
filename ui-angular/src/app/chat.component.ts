@@ -28,6 +28,8 @@ interface Message {
     .user { text-align: right; color: #1976d2; margin: 8px 0; }
     .assistant { text-align: left; color: #388e3c; margin: 8px 0; }
     .chat-form { display: flex; gap: 8px; margin-top: 16px; }
+    .upload-form { display: flex; gap: 8px; margin-bottom: 16px; }
+    input[type='file'] { flex: 1; }
     input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
     button { padding: 8px 16px; border-radius: 4px; border: none; background: #1976d2; color: #fff; cursor: pointer; }
     button:hover { background: #1565c0; }
@@ -37,6 +39,7 @@ export class ChatComponent {
   messages: Message[] = [];
   userInput = '';
   sessionId: string | null = '68f8fe8b73eb2f94a1565191';
+
 
   constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
 

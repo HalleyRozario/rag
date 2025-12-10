@@ -1,12 +1,19 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const dotenv = require('dotenv').config();
+import createError from 'http-errors';
+import express, { Request, Response, NextFunction } from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import dotenv from 'dotenv';
+dotenv.config();
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var indexRouter = require('./routes/index').default;
+var usersRouter = require('./routes/users').default;
+let whereUsedRouter = null;
+try {
+  whereUsedRouter = require('./routes/whereUsed').default;
+} catch (e) {
+  whereUsedRouter = null;
+}
 const cors = require('cors');
 
 var app = express();
@@ -24,13 +31,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+if (whereUsedRouter) app.use('/where-used', whereUsedRouter);
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function(req: Request, res: Response, next: NextFunction) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

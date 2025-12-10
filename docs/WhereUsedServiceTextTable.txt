@@ -1,0 +1,51 @@
+Where Used Service – Reference Guide
+1. Concept Overview
+The "Where Used" service tracks and manages dependencies between metadata objects (e.g.,
+extension fields, validations, UI fields) in SAP CXM. Its main purpose is to provide visibility into where
+an object is used, supporting safe deletion, impact analysis, and dependency management.
+
+2. Key Features
+Up-front Dependency Tracking: Dependencies are recorded as soon as they are created or removed,
+via standard events.
+Supported Dependency Types:
+Hard Dependency: Must be removed before deleting the target object.
+Soft Dependency: Target can be deleted; dependent objects may require cleanup.
+No Maintenance: No tracking needed; consumer adjusts itself.
+Extensible Registry: All participants (object types) and their relationships are registered in a central
+registry.
+Event-Driven Updates:
+Events: createDependency, deleteDependency, updateDependencyForSource
+Consumers must emit these events to keep the dependency graph up to date.
+APIs:
+gRPC and REST APIs to add, remove, update, and query dependencies.
+Supports mass operations and initial load for onboarding or data sync.
+Tenant Copy Support: All dependencies are copied and synchronized during tenant lifecycle
+operations.
+
+3. Typical Dependency Scenarios
+| Object | Usage In | Context Info | Dependency Type |
+| ---------------- | --------------------------- | ------------------------------------------ | --------------- |
+| Extension Fields | Validation | Entity, Custom Logic ID | Hard |
+| Extension Fields | Determination | Entity, Custom Logic ID | Hard |
+| Extension Fields | Autoflow | | Hard |
+| Extension Fields | Approval | | Hard |
+| Extension Fields | UI Data fields | UI View name, Parent UI context, Field Set | Soft |
+| Extension Fields | CLR (Code List Restriction) | | Hard |
+based on this what should be the pdf content so that pdftotext finds this as a single row Current
+consumers include: Validation, Determination, Autoflow, Approval, CLR (Code List Restriction).
+
+4. Example Use Case
+An extension field used in a UI view is tracked as a dependency. Before deleting the field, the service
+can show all UI views where it is used, preventing accidental data loss.
+
+5. API/Event Usage
+Add Dependency Event
+Remove Dependency Event
+Replace Dependency Event
+
+6. Troubleshooting
+If you are unable to remove a field, it is likely referenced by other objects or services (e.g., Validation,
+Determination, Autoflow, Approval, CLR). Use the "Where Used" feature or API to list all usages and
+remove or update dependent references before deletion.
+
+
